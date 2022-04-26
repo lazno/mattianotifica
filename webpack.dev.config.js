@@ -1,5 +1,6 @@
 const path = require('path')
 const webpack = require('webpack')
+const ESLintPlugin = require('eslint-webpack-plugin');
 const HtmlWebPackPlugin = require('html-webpack-plugin')
 
 module.exports = {
@@ -13,24 +14,18 @@ module.exports = {
   },
   mode: 'development',
   target: 'web',
-  devtool: '#source-map',
+  devtool: 'source-map',
   module: {
     rules: [
       {
-        enforce: "pre",
-        test: /\.js$/,
-        exclude: /node_modules/,
-        loader: "eslint-loader",
-        options: {
-          emitWarning: true,
-          failOnError: false,
-          failOnWarning: false
+        test: /\.m?js$/,
+        exclude: /(node_modules|bower_components)/,
+        use: {
+          loader: 'babel-loader',
+          options: {
+            presets: ['@babel/preset-env']
+          }
         }
-      },
-      {
-        test: /\.js$/,
-        exclude: /node_modules/,
-        loader: "babel-loader",
       },
       {
         // Loads the javacript into html template provided.
@@ -43,13 +38,13 @@ module.exports = {
           }
         ]
       },
-      { 
+      {
         test: /\.css$/,
-        use: [ 'style-loader', 'css-loader' ]
+        use: ['style-loader', 'css-loader']
       },
       {
-       test: /\.(png|svg|jpg|gif)$/,
-       use: ['file-loader']
+        test: /\.(png|svg|jpg|gif)$/,
+        use: ['file-loader']
       }
     ]
   },
@@ -57,9 +52,21 @@ module.exports = {
     new HtmlWebPackPlugin({
       template: "./src/html/index.html",
       filename: "./index.html",
-      excludeChunks: [ 'server' ]
+      excludeChunks: ['server']
     }),
     new webpack.HotModuleReplacementPlugin(),
-    new webpack.NoEmitOnErrorsPlugin()
-  ]
+    new webpack.NoEmitOnErrorsPlugin(),
+    new ESLintPlugin()
+  ],
+  resolve: {
+    fallback: {
+      "url": require.resolve("url/")
+      // "crypto": require.resolve("crypto-browserify"),
+      // "os": require.resolve("os-browserify/browser"),
+      // "zlib": require.resolve("browserify-zlib"),
+      // "stream": require.resolve("stream-browserify"),
+      // "assert": require.resolve("assert/"),
+      // "process": require.resolve("process/browser")
+    }
+  }
 }

@@ -1,6 +1,15 @@
 {
   "presets": [
-    "@babel/preset-env",
+    ["@babel/preset-env",
+    {
+      "shippedProposals": true,
+      "bugfixes":true,
+      "targets": {
+        "chrome": "58",
+        "node": "12"
+      }
+    }],
     "@babel/preset-react"
-  ]
+  ],
+  "plugins": ["@babel/transform-runtime"]
 }
